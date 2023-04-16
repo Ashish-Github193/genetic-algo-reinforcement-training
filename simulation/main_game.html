@@ -1,0 +1,36 @@
+<?php 
+    session_start();
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulation</title>
+    <link rel="stylesheet" href="../css/main_game.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM=" crossorigin="anonymous"></script>
+</head>
+<body id="body">
+    <!-- <canvas id="bg" onmousemove="getMousePos(event)"></canvas> -->
+    <canvas id="bg"></canvas>
+    <!-- <div id="points"></div> -->
+    <div id="legend">
+        <div id="fps">60</div>
+        <div id="gen">0</div>
+        <div id="pop">0</div>
+    </div>
+    
+    <img id="roadImage" src="../assets/boundry(132).png">
+    <div id="details">
+        <h1 id="heading">Started</h1>
+        <p id="time">time taken : </p>
+        <p id="sub-details"></p>
+    </div>
+    <div id="controls">
+        <!-- <button onclick="trainFast()">Train fast</button> -->
+    </div>
+
+    
+</html>

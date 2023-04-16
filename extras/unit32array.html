@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <img style="display: none;" src="assets/boundry(127).png" alt="" id="image">
+    <canvas id="canvas"></canvas>
+</body>
+<script>
+    console.log('code started');
+
+
+    var canvas = document.getElementById('canvas');
+    var ctx = canvas.getContext('2d');
+    var ch = canvas.height = window.innerHeight;
+    var cw = canvas.width = window.innerWidth;
+
+    image = document.getElementById('image');
+
+
+    image.onload = () => {
+        ctx.drawImage(image, 0, 0, cw, ch);
+
+        var completeImage = ctx.getImageData(0, 0, cw, ch);
+        var imageUintArray = new Uint32Array(completeImage.data.buffer);
+
+        console.log('red: ' + (imageUintArray[0] >> 0 & 0xff));
+        console.log('blue: ' + (imageUintArray[0] >> 8 & 0xff));
+        console.log('green: ' + (imageUintArray[0] >> 16 & 0xff));
+    }
+
+</script>
+
+</html>

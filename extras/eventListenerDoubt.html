@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <img src="assets/black.png" alt="" id="black-image">
+</body>
+<script>
+    var scriptStartTimeStamp = Date.now();
+    var imageLoadedTimeStamp = NaN;
+    var imageIsLoaded = false;
+
+    image = document.getElementById('black-image');
+
+    image.onload = () => {
+        imageLoadedTimeStamp = Date.now();
+        timeToLoadTheImage = imageLoadedTimeStamp - scriptStartTimeStamp;
+        imageIsLoaded = true;
+        console.log('black-image-is-loaded:', imageIsLoaded);
+        console.log('time taken to the image to load is: ', timeToLoadTheImage);
+        // console.log(scriptStartTimeStamp, imageLoadedTimeStamp);
+    };
+
+    console.log('just-after-loading-code-of-image:', imageIsLoaded);
+
+    if (imageIsLoaded) {
+        console.log('variable-is-changed-and-it-also-calls-if-statement');
+    }
+</script>
+
+</html>

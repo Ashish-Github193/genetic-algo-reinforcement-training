@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Visualization page</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div id="s-panel">
+      <div class="title">sliders</div>
+      <div id="slide-panel"></div>
+      <div id="sliders">
+        <div id="slider">
+          <p>Population_size:</p>
+          <input type="range" min="2" max="1000" value="50" />
+        </div>
+        <div id="slider">
+          <p>Crossover_rate:</p>
+          <input type="range" min="1" max="100" value="50" />
+        </div>
+        <div id="slider">
+          <p>Mutation_rate:</p>
+          <input type="range" min="1" max="100" value="50" />
+        </div>
+        <div id="slider">
+          <p>Steering_constant:</p>
+          <input type="range" min="1" max="5" value="50" />
+        </div>
+        <div id="slider">
+          <p>Breaking_constant:</p>
+          <input type="range" min="1" max="100" value="50" />
+        </div>
+        <div id="slider">
+          <p>Max_velocity:</p>
+          <input type="range" min="1" max="100" value="50" />
+        </div>
+        <div id="slider">
+          <p>Min_velocity:</p>
+          <input type="range" min="1" max="100" value="50" />
+        </div>
+        <div id="slider">
+          <p>Camera_length:</p>
+          <input type="range" min="1" max="100" value="50" />
+        </div>
+        <div id="slider">
+          <p>Camera_divergence:</p>
+          <input type="range" min="1" max="100" value="50" />
+        </div>
+        <div id="slider">
+          <p>Camera_number:</p>
+          <input type="range" min="1" max="100" value="50" />
+        </div>
+        <div id="slider">
+          <p>Early_stopping:</p>
+          <input type="range" min="1" max="100" value="50" />
+        </div>
+      </div>
+    </div>
+
+    <div id="v-panel">
+      <div class="title">visualizations</div>
+      <canvas id="generationFitnessChart"></canvas>
+      <br><canvas id="speedGenerationChart"></canvas>
+      <br><canvas id="successRateOverGenerationsChart"></canvas>
+    </div>
+
+    <div class="circle">
+		<div class="mini_circle" id="c1"></div>
+		<div class="mini_circle" id="c2"></div>
+		<div class="mini_circle" id="c3"></div>
+	</div>
+  </body>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js" integrity="sha512-pumBsjNRGGqkPzKHndZMaAG+bir374sORyzM3uulLV14lN5LyykqNk8eEeUlUkB3U0M4FApyaHraT65ihJhDpQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="./main.js"></script>
+  
+</html>

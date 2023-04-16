@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tinycolor/1.6.0/tinycolor.min.js" integrity="sha512-AvCfbOQzCVi2ctVWF4m89jLwTn/zVPJuS7rhiKyY3zqyCdbPqtvNa0I628GJqPytbowfFjkAGOpq85E5kQc40Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <title>RGB - HEX</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            min-height: 100vh;
+            background-color: lightblue;
+            display: flex;
+        }
+        .part {
+            width: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: green;
+            border: 2px solid darkgreen;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .part > * {
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="rgb-c part">
+        <h2 class="rgb">rgb(123, 242, 112)</h2>
+        <input type="color" name="" id="rgb-input" mode="rgb">
+    </div>
+    <div class="hex-c part">
+        <h2 class="hex">#33333333</h2>
+    </div>
+</body>
+    <script src="tiny.js"></script>
+    <script>
+        var rgb = $('.rgb');
+        $('.rgb-c').css('background-color', rgb.text());
+
+        $('#rgb-input').change(()=> {
+            $('.rgb-c').css('background-color', rgb.text());
+        });
+
+        
+
+        function rgbtohex(color) {
+            color = color.slice(4, -1).split(', ');
+
+            const map = {
+                0 : '0',
+                1 : '1',
+                2 : '2',
+                3 : '3',
+                4 : '4',
+                5 : '5',
+                6 : '6',
+                7 : '7',
+                8 : '8',
+                9 : '9',
+                10: 'a',
+                11: 'b',
+                12: 'c',
+                13: 'd',
+                14: 'e',
+                15: 'f'
+            }
+
+            r=parseInt(color[0]);
+            g=parseInt(color[1]);
+            b=parseInt(color[2]);
+
+            console.log(map[r], map[g], map[b]);
+
+            $('.hex-c').css('background', `#${map[r]}${map[g]}${map[b]}`)
+        }
+
+        rgbtohex('rgb(123, 242, 112)');
+
+        function tohex(value) {
+            const map = {
+                0 : '0',
+                1 : '1',
+                2 : '2',
+                3 : '3',
+                4 : '4',
+                5 : '5',
+                6 : '6',
+                7 : '7',
+                8 : '8',
+                9 : '9',
+                10: 'a',
+                11: 'b',
+                12: 'c',
+                13: 'd',
+                14: 'e',
+                15: 'f'
+            }
+            hex = '';
+            while (value!=0) {
+                quit = Math.floor(value / 16);
+                hex += map[quit];
+                value = value % 16;
+            }
+            console.log(hex);
+        }
+
+        tohex(255);
+
+    </script>
+</html>
