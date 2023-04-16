@@ -157,6 +157,7 @@ $(document).ready(function () {
         $sliderValue  = maxSpeed = $slider.val() / 10;
         carList.forEach(car => car.maxSpeed = $sliderValue);
       }
+      // here is another comment
 
       if ($slider.attr('id') == 'min-velocity-slider') {
         // code for minimum velocity
