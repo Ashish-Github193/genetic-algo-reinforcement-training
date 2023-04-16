@@ -298,5 +298,5 @@ function updateNodeSequence() {
 
 function proceed() {
     console.log('to move');
-    window.location.href = '../genetic-algo-reinforcement-training/simulation/simulation.php';
+    window.location.href = '../genetic-algo-reinforcement-training-main/simulation/simulation.php';
 }
