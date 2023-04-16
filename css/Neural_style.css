@@ -272,9 +272,9 @@ body {
 }
 
 #menu-button {
-    position: relative;
-    top: 2vh;
-    left: 1vw;
+    position: absolute;
+    top: 10px;
+    left: 10px;
     width: 30px;
     height: 50px;
     font-size: 2em;
@@ -588,7 +588,7 @@ body {
     min-width: 0;
     margin: 10px auto;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 20px;
     grid-row-gap: 40px;
     grid-column-gap: 40px;
