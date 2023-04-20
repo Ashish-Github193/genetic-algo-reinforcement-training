@@ -2,6 +2,7 @@ var num_neurons = $('#model-shape').text().split(",").map(ele => parseInt(ele));
 var num_layers = num_neurons.length;
 var input_shape = parseInt($('#model-input-shape').text());
 
+console.log(num_neurons);
 function BubbleSort(cars, networks)
 {    
     for(var i = 0; i < cars.length; i++)

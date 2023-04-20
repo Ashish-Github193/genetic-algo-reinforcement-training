@@ -56,7 +56,7 @@ if ($request->func == 'session-save') {
 }
 
 if ($request->func == 'load-shape-weights') {
-    $id = substr($request->id, -1, 1);
+    $id = $request->id;
     $name = $request->name;
     // echo "model weights request got with id: " . $request->id;
     $conn = mysqli_connect('localhost', 'root', '', 'neuroevolutionsimulation');
@@ -136,6 +136,43 @@ if ($request->func == 'save-model-weights') {
         mysqli_stmt_bind_param($stmt, "ssiii", $model1, $model2, $fitness, $generation, $id);
         mysqli_stmt_execute($stmt);
         echo "model weights saved successfully \n";
+    }
+
+}
+
+if ($request->func == 'save-new-model') {
+    $modelName = $request -> modelName;
+    $activations = $request -> actications;
+    $shape = $request -> shape;
+    $inputShape = $request -> inputShape;
+
+    echo "model Name: " . $modelName . "\n";
+    echo "model Activation: " . $activations. "\n";
+    echo "model Shape: " . $shape. "\n";
+    echo "model InputShape: " . $inputShape. "\n";
+    echo 'request got to save new model.';
+
+    $conn = mysqli_connect("localhost", "root", "", "neuroevolutionsimulation");
+
+    if (!$conn) {
+        echo "\ncouldnt cnnect to the server\n";
+    } else {
+        echo "\nconnected to the server\n";
+    }
+
+    // $sql = 'INSERT INTO `modeldata` (`serial`, `model_name`, `model_1`, `model_2`, `date`, `layers`, `input_shape`, `shape`, `fitness`, `generation`)  VALUES(null, ?, null, null, null, ?, ?, ?, 0, 0)';
+    // $sql = 'INSERT INTO `modeldata` (`serial`, `model_name`, `model_1`, `model_2`, `date`, `layers`, `input_shape`, `shape`, `fitness`, `generation`)  VALUES(3, `fluffy_ass`, `asdf`, `asdf`, `asdf`, `1,2,3,4`, 4, `1,2,3,4`, 0, 0)';
+    $sql = "INSERT INTO `modeldata`(`serial`, `model_name`, `model_1`, `model_2`, `date`, `layers`, `input_shape`, `shape`, `fitness`, `generation`) VALUES (NULL, (?) ,'none','none', NULL, (?), (?), (?),0,0)";
+    $stmt = mysqli_prepare($conn, $sql);
+    if (!$stmt) {
+        echo "Error preparing statement: " . mysqli_error($conn) . "\n";
+    } else {
+        mysqli_stmt_bind_param($stmt, "ssis", $modelName, $activations, $inputShape, $shape);
+        mysqli_stmt_execute($stmt);
+        echo "model weights saved successfully \n";
+
+        mysqli_stmt_close($stmt);
+        mysqli_close($conn);
     }
 
 }

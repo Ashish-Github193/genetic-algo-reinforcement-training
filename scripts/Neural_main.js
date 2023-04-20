@@ -157,6 +157,7 @@ function Add_layer() {
                         $(this).toggleClass("inactive_node active_node");
                 }
                 setTimeout("updateConnections()", 300);
+                updateModelRowForNewModel();
             })
             layer.append(node);
         }
@@ -187,6 +188,7 @@ function delete_layer() {
 
         update_value(-1);
         NumberOfLayers = document.getElementById("main").children.length - 2;
+        updateModelRowForNewModel();
     }
 }
 

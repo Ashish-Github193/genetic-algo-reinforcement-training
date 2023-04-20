@@ -1,16 +1,16 @@
 // ---------------------------------------------- Global Variables --------------------------//
+var population, crossoverRate, mutationRate, numberOfElites, earlyStopping, customTrackImage, customStrartCoordinates, customBoundryColor;
 var global_activations = [];
 var shape = [];
 var global_activation = "#relu_";
 var allGlobalActivations = ['#relu_', '#sigmoid_', '#tanh_'];
+var activationFunctions = ['relu', 'tanh', 'sigmoid'];
 var menuWindowState = 0;
 var NumberOfLayers = document.getElementById("main").children.length - 2;
 var current_theme = ['#001824', '#012536', '#ffb703'];
 var modelData = {};
-var population, crossoverRate, mutationRate, numberOfElites, earlyStopping, customTrackImage, customStrartCoordinates, customBoundryColor;
 
 var edit_status, currentLayer;
-var activationFunctions = ['relu', 'tanh', 'sigmoid'];
 
 var simulationSettings = {
     'population_size': 50,
@@ -59,7 +59,7 @@ function Connection(layer1, layer2) {
                     var h2 = child2.offsetHeight;
                     var xy2 = child2.getBoundingClientRect();
                     drawLine([xy1.left + w1, xy1.top + h1], [xy2.left + w2, xy2.top + h2], current_theme[2], 1);
-                    console.log('if chal rha hai');
+                    // console.log('if chal rha hai');
                 }
             }
     }
@@ -93,6 +93,7 @@ function showAlert(heading, para, btnFuntion = 0, timeToStay = 1000) {
         $('#alert > button').css('display', 'block');
         $('#alert > button').text('learn more');
     }
+    
     $('#alert-box').css('transform', 'translateX(-10%)');
 
     (para.split(' ').length = 0) ? timeToStay = para.split(' ').length * 500 : 0;
@@ -108,7 +109,7 @@ function showAlert(heading, para, btnFuntion = 0, timeToStay = 1000) {
 
 }
 
-showAlert('hello', 'welcome to nural-network driven car simulation', () => { console.log('none') });
+showAlert('hello', 'welcome to nural-network driven car simulation', () => { console.log('none') }, 2000);
 
 
 function findNumberOfLayers() {
@@ -132,6 +133,13 @@ function findModelShape() {
     return shape;
 }
 
-function getNuronTemplate() {
-    
+function findModelActivation() {
+    children = $('#main').children();
+    let activations = [];
+    children.each((idx, child) => {
+        activationFunctions.forEach(activation => {
+            ($(child).hasClass(activation)) ? activations.push(activation) : 0;
+        });
+    });
+    return activations;
 }

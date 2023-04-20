@@ -43,6 +43,7 @@
         $_SESSION['model-activations'] = '';
         $_SESSION['model-fitness'] = '';
         $_SESSION['model-generation'] = '';
+        $_SESSION['model-save-type'] = ''; // temp / perm
     }
     
     // if (!$_SESSION['name']) {
@@ -100,19 +101,15 @@
                 <!-- heading -->
                 <div id="model-list0" class="general-content-model-heading">
                     <div class="ml-info">
-                        <div class="ml-primary-info">
-                            <div id="sno0" class="ml-sno
-                                    content-model-class-text">Sno.</div>
-                            <div id="name0" class="ml-name
-                                    content-model-class-text">Model</div>
+                        <div class="ml-primary-info ">
+                            <div id="sno0" class="ml-sno content-model-class-text hidden">Sno.</div>
+                            <div id="name0" class="ml-name content-model-class-text" >Model</div>
                         </div>
                         <div class="ml-secondary-info">
-                            <div id="nol0" class="ml-nol
-                                    content-model-class-text">n-layers</div>
-                            <div id="fitness0" class="ml-fit
-                                    content-model-class-text">fitness</div>
-                            <div id="generation0" class="ml-gen
-                                    content-model-class-text">gen</div>
+                            <div id="nol0" class="ml-nol  content-model-class-text">n-layers</div>
+                            <div id="fitness0" class="ml-fit content-model-class-text">fit</div>
+                            <div id="generation0" class="ml-gen  content-model-class-text">gen</div>
+                            <div id="input-shape0" class="ml-noc  content-model-class-text">ci</div>
                         </div>
                     </div>
                 </div>
@@ -129,34 +126,39 @@
                 if (!$result) {
                     echo "error: " . mysqli_error($conn);
                 } else {
-
+                    $id = 1;
                     if (mysqli_num_rows($result) > 0) {
 
                         while ($row = mysqli_fetch_assoc($result)) {
                             $serial = $row['serial'];
                             $modelName = $row['model_name'];
-                            $layers = $row['layers'];
+                            $layers = count(explode(",", $row['layers']));
                             $fitness = $row['fitness'];
                             $generation = $row['generation'];
+                            $inputShape = $row['input_shape'];
+                            $modelShape = implode("-", explode(",", $row['shape']));
+                            // $modelShape = $row['shape'];
 
 
-                            echo '<div id="model-list' . $serial . '" class="general-content-model">
+                            echo '<div id="model-list' . $id . '" class="general-content-model non-editable">
                                 <div class="ml-info">
                                     <div class="ml-primary-info">
-                                        <div id="sno' . $serial . '" class="ml-sno content-model-class-text">m_' . $serial . '</div>
-                                        <div id="name' . $serial . '" class="ml-name content-model-class-text">' . $modelName . '</div>
+                                        <div id="sno' . $id . '" class="ml-sno content-model-class-text hidden">m_' . $serial . '</div>
+                                        <div id="name' . $id . '" class="ml-name content-model-class-text">' . $modelName . '</div>
                                     </div>
                                     <div class="ml-secondary-info">
-                                        <div id="nol' . $serial . '" class="ml-nol content-model-class-text">' . count(explode(', ', $layers)) . ' layers</div>
-                                        <div id="fitness' . $serial . '" class="ml-fit content-model-class-text">' . $fitness . '</div>
-                                        <div id="generation' . $serial . '" class="ml-gen content-model-class-text">' . $generation . '</div>
+                                        <div id="nol' . $id . '" class="ml-nol content-model-class-text">' . $layers . ' layers</div>
+                                        <div id="fitness' . $id . '" class="ml-fit content-model-class-text">' . $fitness . '</div>
+                                        <div id="generation' . $id . '" class="ml-gen content-model-class-text">' . $generation . '</div>
+                                        <div id="input-shape' . $id . '" class="ml-noc content-model-class-text">' . $inputShape . '</div>
                                     </div>
                                 </div>
                                 <div class="ml-operations">
-                                    <div id="load' . $serial . '" class="ml-ops" onclick=loadModel(' . $serial . ')>load</div>
-                                    <div id="delete' . $serial . '" class="ml-ops" onclick=deleteModel(' . $serial . ')>delete</div>
+                                    <div id="load' . $id . '" class="ml-ops" onclick=loadModel(' . $id . ')>load</div>
+                                    <div id="delete' . $id . '" class="ml-ops" onclick=deleteModel(' . $id . ')>delete</div>
                                 </div>
                             </div>';
+                            $id++;
                         }
                     }
                 }

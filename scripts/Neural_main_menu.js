@@ -1,7 +1,8 @@
 var ctrl_panel_slider = $("#control_panel_slider");
 ctrl_panel_slider.html("<i class='fa fa-angle-down' aria-hidden='true'></i>");
 var crtl_panel_status = 1;
-var currentModel = 'temp';
+var tempModelCreated = false;
+var numberOfModels;
 
 ctrl_panel_slider.mouseenter(function () {
 
@@ -85,18 +86,95 @@ $('#general').click(() => {
     }
 });
 
+// $('.node').click(()=>{
+//     alert('clicked');
+// });
+
 $('#create-new-model').click((e) => {
-    console.log('create new model');
-    let modelLength = $('.general-content-model').length + 1;
-    const template = '<div id="model-list' + modelLength + '" class="general-content-model"><div class="ml-info"><div class="ml-primary-info"><div id="sno' + modelLength + '" class="ml-sno ml-name">t_' + modelLength + '.</div><div id="name' + modelLength + '" class="ml-name ml-name">temp_model_' + modelLength + '</div></div><div class="ml-secondary-info"><div id="nol' + modelLength + '" class="ml-nol ml-name">0 layers</div><div id="fitness' + modelLength + '" class="ml-fit ml-name">0</div><div id="fitness' + modelLength + '" class="ml-fit ml-name">0</div></div></div><div class="ml-operations"><div id="delete' + modelLength + '" class="ml-ops ml-ops-del-btn" onclick="deleteModel(\'' + modelLength + '\')">delete</div></div></div>';
-    $(template).insertBefore("div.general-content-new-model");
+    if (!tempModelCreated) {
+        tempModelCreated = 'temp';
+        numberOfModels = $('.general-content-model').length + 1;
+        const rowTemplate = '<div id="model-list' + numberOfModels + '" class="general-content-model"><div class="ml-info"><div class="ml-primary-info"><div id="sno' + numberOfModels + '" class="ml-sno hidden">t_' + numberOfModels + '.</div><div id="name' + numberOfModels + '" class="ml-name editable" contenteditable="true">t_model_' + numberOfModels + '</div></div><div class="ml-secondary-info"><div id="nol' + numberOfModels + '" class="ml-nol ">0 layers</div><div id="fitness' + numberOfModels + '" class="ml-fit">-</div><div id="generation' + numberOfModels + '" class="ml-gen">-</div><div id="input-shape' + numberOfModels + '" class="ml-noc content-model-class-text" contenteditable="true">5</div></div></div><div class="ml-operations"><div id="load' + numberOfModels + '" class="ml-ops" onclick=saveNewModel(' + numberOfModels + ')>save</div><div id="delete' + numberOfModels + '" class="ml-ops ml-ops-del-btn" onclick="deleteModel(\'' + numberOfModels + '\')">delete</div></div></div>';
+        $(rowTemplate).insertBefore("div.general-content-new-model");
+        const neuronTemplate = '<div id="layerFirst" class="layer"><div id="layerFirst_node1" class="node active_node disabled_node"></div><div id="layerFirst_node2" class="node active_node disabled_node"></div><div id="layerFirst_node3" class="node active_node disabled_node"></div><div id="layerFirst_node4" class="node active_node disabled_node"></div><div id="layerFirst_node5" class="node active_node disabled_node"></div></div><div id="layerLast" class="layer"><div id="layerLast_node1" class="node active_node disabled_node"></div><div id="layerLast_node2" class="node active_node disabled_node"></div><div id="layerLast_node3" class="node active_node disabled_node"></div><div id="layerLast_node4" class="node active_node disabled_node"></div></div>';
+        $('#main').html(neuronTemplate);
+        updateConnections();
+        $('.node').each((_, node) => $(node).on('click', updateModelRowForNewModel));
+    }else {
+        return 0;
+    }
 });
+
+function updateModelRowForNewModel() {
+    $('#nol' + numberOfModels).text(findModelShape().length + " layers");
+}
+
+
+function saveNewModel(idx) {
+    const shape = findModelShape().join(',');
+    const modelName = $('#name' + idx).text();
+    const activations = findModelActivation().join(',');
+    const inputShape = $('#input-shape' + idx).text();
+
+    if ((modelName == '') || (shape == '') || (activations == '') || (!inputShape)) {
+        showAlert('Model Not Saved', "Enter required parameters carefully.", () => { console.log('') }, 5000);
+        return 0;
+    }
+    if (shape.split(',').some(num => (num == 0))) {
+        showAlert('Model Not Saved', "Check whether neuron is connected properly between input and output layers.", () => { console.log('') }, 5000);
+        return 0;
+    }
+
+    const settings = {
+        func: 'save-new-model',
+        modelName: modelName,
+        actications: activations,
+        shape: shape,
+        inputShape: inputShape,
+    }
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', 'php/main.php', true);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.onload = () => {
+        console.log(xhr.responseText);
+        $('#load' + idx).text('load');
+        tempModelCreated = false;
+        showAlert('Model Saved', 'models weights of ' + modelName + ' is saved.', () => { console.log('') });
+        setTimeout(()=>{window.location.href = '../genetic-algo-reinforcement-training/index.php';}, 5000)
+    }
+    xhr.send(JSON.stringify(settings));
+    alert("model name is: " + modelName + " model shape is: " + shape +  "activations are: " + activations + " input shape is: " + inputShape + ' saved to databse'); 
+}
+
 
 function deleteModel(e) {
     console.log(e);
     $('#model-list' + e).css('display', 'none');
     /////////////////////////////////
     // to be continued....
+}
+
+function loadModel(idx) {
+    // tempModelCreated = 'perm';
+    const row = $(`#model-list${idx}`);
+    const serial = row.find('.ml-sno').text().split('_')[1];
+    const name = row.find('.ml-name').text();
+    const settings = {
+        func: 'load-shape-weights',
+        id: serial,
+        name: name,
+    }
+    console.log(settings);
+    let xhr = new XMLHttpRequest();
+    xhr.open('POST', 'php/main.php', true);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.onload = () => {
+        const data = JSON.parse(xhr.response);
+        $('#main').html(data.template);
+        updateConnections();
+        showAlert('Model Loaded', 'models weights of ' + name + ' is loaded. Its shape is ' + data.shape.join(' - ') + ' .', 0, 3000);
+    }
+    xhr.send(JSON.stringify(settings));
 }
 
 
@@ -357,7 +435,7 @@ function changeCameraDivergence(current, changeBy, min = 90, max = 180) {
 }
 
 function changeCameraNumber(current, changeBy, min = 3, max = 10) {
-    if (currentModel == 'temp') {
+    if (tempModelCreated == 'temp') {
         if ((current < max) && (changeBy > 0)) {
             current += changeBy;
         }
@@ -452,26 +530,6 @@ function saveSimulationInSessionStorage() {
     xhr.send(JSON.stringify(settings));
 }
 
-function loadModel(idx) {
-    const row = $(`#model-list${idx}`);
-    const id = row.find('.ml-sno').text();
-    const name = row.find('.ml-name').text();
-    const settings = {
-        func: 'load-shape-weights',
-        id: id,
-        name: name,
-    }
-    let xhr = new XMLHttpRequest();
-    xhr.open('POST', 'php/main.php', true);
-    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-    xhr.onload = () => {
-        const data = JSON.parse(xhr.response);
-        $('#main').html(data.template);
-        updateConnections();
-        // console.log(data.template);
-    }
-    xhr.send(JSON.stringify(settings));
-}
 
 
 
