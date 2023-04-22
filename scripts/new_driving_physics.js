@@ -454,8 +454,7 @@ function run()
 
       fitnessList.push(roundNumber(findObjectWithMaxAttribute(carList, 'fitness').fitness, 2));
       successRateList.push(roundNumber((checkAliveCars() / population), 3));
-      maxVelocityReacedList.push(roundNumber(findObjectWithMaxAttribute(carList, 'fitness').speed, 2));
-      maxVelocityReacedList.push(roundNumber(findObjectWithMaxAttribute(carList, 'fitness').speed, 2));
+      maxVelocityReacedList.push(roundNumber(findObjectWithMaxAttribute(carList, 'speed').speed, 2));
       populationList.push(population);
 
       (successRateList[0] != 0) ? successRateList[0] = 0 : 0; // to solve a bug of always showing 1 in successrate list in first position; 
