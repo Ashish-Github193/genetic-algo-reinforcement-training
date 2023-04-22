@@ -1,0 +1,3 @@
+dbname: neuroevolutionsimulation;
+tableonename: modeldata;
+tabletwoname: trackimage;

@@ -201,6 +201,9 @@ function loadModel(idx) {
         showAlert('Model Loaded', 'models weights of ' + name + ' is loaded. Its shape is ' + data.shape.join(' - ') + ' .', 0, 3000);
     }
     xhr.send(JSON.stringify(settings));
+    if (edit_status % 2 == 0) {
+        edit_on_off('#edit');
+    } 
 }
 
 

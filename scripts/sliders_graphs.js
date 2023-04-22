@@ -18,7 +18,7 @@ $(document).ready(function () {
     }).trigger('input'); // Trigger the input event for each range input
 
     $slider.change(() => {
-      console.log($slider.val());
+      // console.log($slider.val());
       if ($slider.attr('id') == 'population-slider') {
         // code for population
         population = parseInt($slider.val());
