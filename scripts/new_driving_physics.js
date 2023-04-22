@@ -36,9 +36,7 @@ var trackBoundryColor = hexToRgb($("#tbc").text());
 var spawnPoint = $("#sp").text().split(",").map((ele) => parseFloat(ele));
 var startVector = $("#sv").text().split(",").map((ele) => parseFloat(ele));
 
-// var population = 100;
-// var crossoverRate = 50;
-// var mutationRate = 10;
+
 var frameIndex = 0;
 var generation = 0;
 var population = parseInt($('#population-size').text());
@@ -48,11 +46,17 @@ var numberOfElites = parseInt($('#number-of-elites').text());
 var cameraData = [];
 var controlData = Array.from({ length: population }, () => [0, 0]);
 var lastGenTime = Date.now();
+var generationAliveTime = parseInt($('#generation-alive-time').text()) * 1000;
 var carList = [];
-var numberOfCamers = parseInt($('#camera-number').text());
+var numberOfCamers = parseInt($('#model-input-shape').text());
 var live_cars = population;
 var genetic_algo = new GENETIC_ALGORITHM(population_size = population, crossover_rate = crossoverRate / 100, mutation_rate = mutationRate / 10, elite_networks = 2);
 
+var fitnessList = [];
+var maxVelocityReacedList = [];
+var ParentAverageVelocityList = [];
+var successRateList = []
+var populationList = []
 
 
 var flag = 0;
@@ -64,15 +68,15 @@ var accelaration = 0.01;
 var steeringConstant = 0.02;
 var breakingConstant = 0.2;
 
+// extra settings 
+var drawExactDetails = 0;
+var drawVelocityVector = 0;
+var drawCameraRays = 0;
 
 // camera settings
 var cameraRange = parseInt($('#camera-length').text());
 var cameraDivergence = parseInt($('#camera-divergence').text());
 
-console.log(cameraRange, numberOfCamers, cameraDivergence);
-
-
-// console.log(getImageDataFaster());
 
 
 function Car(x = spawnPoint[0], y = spawnPoint[1]) {
@@ -99,6 +103,8 @@ function Car(x = spawnPoint[0], y = spawnPoint[1]) {
     startVector[1] - spawnPoint[1]
   ).unitVector().intensify(this.minSpeed);
   this.r = this.velocity.r;
+  this.speed = this.velocity.magnitude;
+  this.maxSpeedReached = this.velocity.magnitude;
 
   // camera settings:
   this.cameraDivergence = cameraDivergence * (Math.PI / 180);
@@ -191,7 +197,9 @@ function Car(x = spawnPoint[0], y = spawnPoint[1]) {
       this.x += this.velocity.x;
       this.y += this.velocity.y;
       this.r = this.velocity.r;
-      this.fitness += Math.floor(this.velocity.mod);
+      this.fitness += this.velocity.mod;
+      this.speed = this.velocity.mod;
+      (this.speed > this.maxSpeedReached) ? this.maxSpeed = this.speed : 0;
     } else if (this.state === 'stop') {
       this.velocity = new vector(0, 0);
       // this.x += this.velocity.x;
@@ -207,10 +215,13 @@ function Car(x = spawnPoint[0], y = spawnPoint[1]) {
   this.draw = () => {
 
     if (this.state == 'start') {
-      for (i in this.cameras) {
-        ctx.setTransform(1, 0, 0, 1, 0, 0);
-        ctx.beginPath();
-        this.cameras[i].draw();
+
+      if (drawCameraRays) {
+        for (i in this.cameras) {
+          ctx.setTransform(1, 0, 0, 1, 0, 0);
+          ctx.beginPath();
+          this.cameras[i].draw();
+        }
       }
 
 
@@ -285,39 +296,47 @@ function Car(x = spawnPoint[0], y = spawnPoint[1]) {
       ctx.rotate(this.r);
       ctx.drawImage(carImage, -100, (-1 * carImage.height) / 2);
 
-      // ctx.setTransform(1, 0, 0, 1, 0, 0);
-      // ctx.beginPath();
-      // ctx.strokeStyle = "red";
-      // ctx.arc(this.x, this.y, 400 * this.scaleTyreImage, 0, Math.PI * 2);
-      // ctx.stroke();
+      if (drawExactDetails) {
+        ctx.setTransform(1, 0, 0, 1, this.x, this.y);
 
-      // ctx.beginPath();
-      // ctx.strokeStyle = "green";
-      // ctx.arc(this.x, this.y, 1000 * this.scaleTyreImage, 0, Math.PI * 2);
-      // ctx.stroke();
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = '#111';
+        ctx.moveTo(0, 0);
+        ctx.lineTo(10, 10);
+        ctx.stroke();
 
-      // ctx.beginPath();
-      // ctx.strokeStyle = "black";
-      // ctx.moveTo(0, this.y);
-      // ctx.lineTo(canvasWidth, this.y);
-      // ctx.stroke();
+        ctx.fillStyle = "#111";
+        ctx.fillRect(8, 8, 84, 74);
 
-      // ctx.beginPath();
-      // ctx.moveTo(this.x, 0);
-      // ctx.lineTo(this.x, canvasHeight);
-      // ctx.stroke();
+        ctx.fillStyle = "#40d672";
+        ctx.fillRect(10, 10, 80, 70);
 
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
-      ctx.beginPath();
-      ctx.strokeStyle = "blue";
-      ctx.lineWidth = 2;
-      ctx.moveTo(this.x, this.y);
-      ctx.lineTo(this.x + this.velocity.x * 20, this.y + this.velocity.y * 20);
-      ctx.stroke();
+        ctx.fillStyle = "#111";
+        ctx.font = "12px Arial";
+        ctx.textAlign = "left";
+        ctx.textBaseline = "middle";
+        ctx.fillText("fit: " + roundNumber(this.fitness, 2), 15, 25);
+        ctx.fillText("vel: " + roundNumber(this.velocity.mod, 2), 15, 40);
+        ctx.fillText("psx: " + roundNumber(this.x, 2), 15, 55);
+        ctx.fillText("psy: " + roundNumber(this.y, 2), 15, 70);
+      }
+
+
+      if (drawVelocityVector) {
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.beginPath();
+        ctx.strokeStyle = "blue";
+        ctx.lineWidth = 2;
+        ctx.moveTo(this.x, this.y);
+        ctx.lineTo(this.x + this.velocity.x * 25, this.y + this.velocity.y * 25);
+        ctx.stroke();
+      }
+
     } else {
+      ctx.setTransform(1, 0, 0, 1, 0, 0)
       ctx.beginPath();
       ctx.fillStyle = 'red';
-      ctx.arc(this.x, this.y, 1, 0, 2 * Math.PI);
+      ctx.arc(this.x, this.y, 3, 0, 2 * Math.PI);
       ctx.fill();
     }
   }
@@ -363,9 +382,8 @@ function Camera(carX, carY, degree, range) {
       const x = parseInt(this.x + this.range * Math.cos(this.degree));
       const y = parseInt(this.y + this.range * Math.sin(this.degree));
       colorData = getImageDataFaster(x, y);
-      if ((colorData & 0xff) == trackBoundryColor[0] &&((colorData >> 8) & 0xff) == trackBoundryColor[1] &&((colorData >> 16) & 0xff) == trackBoundryColor[2]) 
-      {break;} 
-      else {this.range += 1; }
+      if ((colorData & 0xff) == trackBoundryColor[0] && ((colorData >> 8) & 0xff) == trackBoundryColor[1] && ((colorData >> 16) & 0xff) == trackBoundryColor[2]) { break; }
+      else { this.range += 1; }
     }
 
     this.cameraRayColor =
@@ -408,25 +426,50 @@ onkeydown = (e) => {
   }
 }
 
+
+// Create and update charts
+var chart_fit_gen = createAndUpdateRealTimeChart("generationFitnessChart", "Fitness", "Generation");
+var chart_speed_gen = createAndUpdateRealTimeChart("speedGenerationChart", "Speed", "Generation");
+var chart_succ_gen = createAndUpdateRealTimeChart("successRateOverGenerationsChart", "SuccessRate", "Generation");
+
 // onkeyup = () => { manual_steer_data = 0 };
 var next = 1;
 
-var car = new Car();
 
-function run() {
+function run() 
+{
 
-  // (frameIndex % 30) ? 0 : updateBestCarData(carList, manual_steer_data, generation);
+  (frameIndex % 30) ? 0 : updateBestCarData(carList);
 
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   ctx.drawImage(roadImage, 0, 0, canvasWidth, canvasHeight);
   cameraData = [];
-  
+
   // console.log(carList[1].auto_steer_data);
-  
+
 
   if (manual_steer_data !== -1) {
-    if (timeDiff(lastGenTime, 50000) || CheckDeadCars() || next) {
+    if (timeDiff(lastGenTime, generationAliveTime) || CheckDeadCars() || next) {
       generation++;
+
+      fitnessList.push(roundNumber(findObjectWithMaxAttribute(carList, 'fitness').fitness, 2));
+      successRateList.push(roundNumber((checkAliveCars() / population), 3));
+      maxVelocityReacedList.push(roundNumber(findObjectWithMaxAttribute(carList, 'fitness').speed, 2));
+      maxVelocityReacedList.push(roundNumber(findObjectWithMaxAttribute(carList, 'fitness').speed, 2));
+      populationList.push(population);
+
+      (successRateList[0] != 0) ? successRateList[0] = 0 : 0; // to solve a bug of always showing 1 in successrate list in first position; 
+
+      // console.log('///// new generation ////');
+      // console.log("fit: ", fitnessList);
+      // console.log("scc: ", successRateList);
+      // console.log("mxv: ", maxVelocityReacedList);
+      // console.log("ppl: ", populationList);
+
+      chart_fit_gen.updateChartData(fitnessList.at(-1), generation-1);
+      chart_speed_gen.updateChartData(maxVelocityReacedList.at(-1), generation-1);
+      chart_succ_gen.updateChartData(successRateList.at(-1), generation-1);
+
       lastGenTime = Date.now();
       frameIndex = 0;
       fitnesses = [];
@@ -456,8 +499,10 @@ function run() {
       }
     }
   }
+  
+  (frameIndex % 1) ? 0 : carList.forEach((car) => car.draw());
 
-  carList.forEach((car) => car.draw());
+  // carList.forEach((car) => car.draw());
 
   window.requestAnimationFrame(run);
 }
@@ -467,7 +512,7 @@ $(function () {
   ctx.drawImage(roadImage, 0, 0, canvasWidth, canvasHeight);
   completeImage = new Uint32Array(ctx.getImageData(0, 0, canvasWidth, canvasHeight).data.buffer);
   createNewPopulation();
-  console.log(completeImage);
+  // console.log(completeImage);
   // console.log(getImageDataFaster(100, 100));
   run();
 });

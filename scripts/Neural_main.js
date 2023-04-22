@@ -37,14 +37,11 @@ const ctx = canvas[0].getContext("2d");
 
 let rectangle = null;
 
-$(document).on("mousedown", (event) => {
-    // Check if the right mouse button was pressed
+$("#bg, #main").on("mousedown", (event) => {
     if (event.which === 1 && menuWindowState == 0) {
-        // Get the mouse coordinates
         const mouseX = event.clientX;
         const mouseY = event.clientY;
 
-        // Create a rectangle object with the mouse coordinates as the top-left corner
         rectangle = {
             x: mouseX,
             y: mouseY,
@@ -52,14 +49,11 @@ $(document).on("mousedown", (event) => {
             height: 0,
         };
 
-        // Add a mousemove event listener to update the rectangle size and redraw it on the canvas
         $(document).on("mousemove", updateRectangle);
-
-        // Add a mouseup event listener to remove the rectangle and cleanup the event listeners
         $(document).on("mouseup", function mouseUpCallback() {
             ctx.clearRect(0, 0, canvas.width(), canvas.height()); // clear the entire canvas
             trunNodeOn(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
-            setTimeout("updateConnections()", 300);
+            setTimeout(updateConnections, 300);
             rectangle = null;
             $(document).off("mousemove", updateRectangle);
             $(document).off("mouseup", mouseUpCallback);
@@ -103,9 +97,9 @@ function trunNodeOn(x, y, width, height) {
 
     for (let i = 1; i <= NumberOfLayers; i++) {
         const layer = document.getElementById("layer" + i);
-        const childs = layer.childNodes;
+        const children = layer.children;
 
-        for (const child of childs) {
+        for (const child of children) {
             const childRect = child.getBoundingClientRect();
             const childEndX = childRect.left + child.offsetWidth;
             const childEndY = childRect.top + child.offsetHeight;
@@ -116,6 +110,7 @@ function trunNodeOn(x, y, width, height) {
         }
     }
 }
+
 
 
 /////////////////////// creting line between nodes /////////////////////////
@@ -157,6 +152,7 @@ function Add_layer() {
                         $(this).toggleClass("inactive_node active_node");
                 }
                 setTimeout("updateConnections()", 300);
+                updateModelRowForNewModel();
             })
             layer.append(node);
         }
@@ -187,8 +183,16 @@ function delete_layer() {
 
         update_value(-1);
         NumberOfLayers = document.getElementById("main").children.length - 2;
+        updateModelRowForNewModel();
     }
 }
+
+onkeydown = (e) => {
+    if (e.key == "+") {
+      Add_layer();
+      updateConnections();
+    }
+  }
 
 $(window).resize(function () { updateConnections(); });
 
@@ -298,5 +302,11 @@ function updateNodeSequence() {
 
 function proceed() {
     console.log('to move');
-    window.location.href = '../genetic-algo-reinforcement-training-main/simulation/simulation.php';
+    window.location.href = '../genetic-algo-reinforcement-training/simulation/simulation.php';
 }
+
+$(
+    function () {
+        updateConnections()
+    }
+)

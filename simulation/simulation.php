@@ -28,7 +28,7 @@
         echo '<div id="td-i">elites number </div>      <span class="t-d" id="number-of-elites">      ' . $_SESSION['number_of_elite_networks'] . '</span>';
         echo '<div id="td-i">camera range</div>          <span class="t-d" id="camera-length">         ' . $_SESSION['camera_length'] . '</span>';
         echo '<div id="td-i">camera divergence</div>     <span class="t-d" id="camera-divergence">     ' . $_SESSION['camera_divergence'] . '</span>';
-        echo '<div id="td-i">camera number</div>         <span class="t-d" id="camera-number">         ' . $_SESSION['camera_number'] . '</span>';
+        // echo '<div id="td-i">camera number</div>         <span class="t-d" id="camera-number">         ' . $_SESSION['camera_number'] . '</span>';
         echo '<div id="td-i">generation alive</div>      <span class="t-d" id="generation-alive-time"> ' . $_SESSION['generation_alive_time'] . '</span>';
         echo '<div id="td-i">global activation</div>     <span class="t-d" id="global-activation">     ' . $_SESSION['global_activation'] . '</span>';
 
@@ -36,8 +36,8 @@
         echo '<div id="td-i">model name</div>     <span class="t-d" id="model-name">     ' . $_SESSION['model-name'] . '</span>';
         echo '<div id="td-i">model shape</div>     <span class="t-d" id="model-shape">     ' . $_SESSION['model-shape'] . '</span>';
         echo '<div id="td-i">input shape</div>     <span class="t-d" id="model-input-shape">     ' . $_SESSION['model-input-shape'] . '</span>';
-        echo '<div id="td-i">model one</div>     <span class="t-d hidden" id="model-one-weights">     ' . $_SESSION['model-one-weights'] . '</span>';
-        echo '<div id="td-i">model two</div>     <span class="t-d hidden" id="model-two-weights">     ' . $_SESSION['model-two-weights'] . '</span>';
+        echo '<div id="td-i">model one</div>     <span class="t-d " id="model-one-weights">     ' . $_SESSION['model-one-weights'] . '</span>';
+        echo '<div id="td-i">model two</div>     <span class="t-d " id="model-two-weights">     ' . $_SESSION['model-two-weights'] . '</span>';
         ?>
         <?php
         if (!$_SESSION['track-image']) {
@@ -53,7 +53,9 @@
     <div id="show-panel">
         <div id="model-name-show" class="item">model:      <span id="model-name-box"><?php echo $_SESSION['model-name'];?></span></div>
         <div id="generation-show" class="item">generation: <span id="generation-box">132</span></div>
-        <div id="fitness-show" class="item">max fitness:   <span id="fitness-box">23465</span></div>
+        <div id="population-show" class="item">population: <span id="population-box">0</span></div>
+        <div id="fitness-show" class="item">fitness:   <span id="fitness-box">23465</span></div>
+        <div id="last-gen-fitness-show" class="item">last gen max fitness:   <span id="last-gen-fitness-box"></span></div>
     </div>
     <div id="options">
         <button class="control-btn" id="pause-btn">pause</button>
@@ -77,7 +79,7 @@
             <span>
                 <p>Crossover rate:</p><span class="value"></span>
             </span>
-            <input id="crossover-rate-slider" type="range" min="5" max="200" value="<?php echo $_SESSION['crossover_rate']; ?>" />
+            <input id="crossover-rate-slider" type="range" min="5" max="100" value="<?php echo $_SESSION['crossover_rate']; ?>" />
         </div>
         <div class="sliders">
             <span>
@@ -89,19 +91,19 @@
             <span>
                 <p>Steering constant:</p><span class="value"></span>
             </span>
-            <input id="steering-const-slider" type="range" min="1" max="10" value="5" />
+            <input id="steering-const-slider" type="range" min="1" max="10" value="2" />
         </div>
         <div class="sliders">
             <span>
                 <p>Breaking constant:</p><span class="value"></span>
             </span>
-            <input id="breaking-const-slider" type="range" min="1" max="10" value="8" />
+            <input id="breaking-const-slider" type="range" min="1" max="10" value="2" />
         </div>
         <div class="sliders">
             <span>
                 <p>Maximum velocity:</p><span class="value"></span>
             </span>
-            <input id="max-velocity-slider" type="range" min="30" max="50" value="40" />
+            <input id="max-velocity-slider" type="range" min="30" max="60" value="40" />
         </div>
         <div class="sliders">
             <span>
@@ -147,76 +149,100 @@
         </div>
     </div>
     <div id="insights">
-        <h2 class="heading">This is how this works</h2>
-        <p class="para">Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatibus, sit vel ullam culpa
-            nesciunt incidunt fugiat expedita quidem maxime. Illo mollitia ab repellendus excepturi itaque minima
-            consequatur veniam quis laborum dicta sunt fuga, suscipit similique ad dolorum dolores in iure assumenda
-            impedit ullam. Sit suscipit ipsa deleniti ab, at explicabo voluptas nemo quibusdam illum, quae vel totam
-            omnis! Soluta mollitia nostrum aut sit quia officia temporibus fugit, iure quas ab? Earum magni a fugit,
-            doloribus labore doloremque veniam odio aliquid dolor, dolores commodi similique laboriosam corporis
-            deleniti necessitatibus architecto rem, est illo. Facere facilis repudiandae ex explicabo maiores deserunt
-            sint tenetur molestiae repellat, enim veritatis aliquid, eum aspernatur eligendi cum porro non nesciunt
-            optio vel alias. Sequi quaerat similique eos laboriosam ut eum expedita aspernatur soluta. Ex laborum ad
-            nemo sapiente aut quibusdam ab veniam atque quod possimus labore deserunt neque at repellendus velit vero
-            delectus, accusamus excepturi mollitia tempora voluptate eveniet dignissimos. Molestiae nemo similique
-            numquam modi. Ad, eaque. Aut quia hic tempora nobis animi modi amet. Veritatis ratione voluptates numquam
-            distinctio provident saepe cumque eum doloremque laborum quaerat modi maxime sit id velit aperiam alias
-            vitae ut cum, dolorem perspiciatis, ad deleniti culpa? Et nemo dolor consequuntur labore!</p>
+        <h2 class="heading">Simulation Overview</h2>
+        <p class="para">The system is based on a neural network, which is a computer program that can learn to recognize
+            patterns and make decisions based on them. The neural network is trained using a reinforcement learning
+            technique, where the system is given a reward for making correct decisions and penalized for making
+            incorrect decisions.
+            Over time, the system learns to drive the car more efficiently and effectively.
+
+            To optimize the performance of the system, you are using a genetic algorithm. This is a technique inspired
+            by natural selection, where the system evolves over time by selecting the fittest individuals from a
+            population and breeding them to create the next generation.
+            In this way, the system can learn from its mistakes and improve its performance over time.
+
+            The virtual track on which the car is driving is designed to challenge the artificial intelligence system.
+            It includes various obstacles and hazards, such as sharp turns, narrow corridors, and barriers. The system
+            must learn to navigate these obstacles and avoid collisions while still driving as quickly and efficiently
+            as possible.
+
+            The project is designed to be both educational and entertaining. By simulating the process of neural network
+            reinforcement with genetic algorithm, you can gain a deeper understanding of how artificial intelligence
+            systems learn and evolve.
+            At the same time, the top view car game provides an exciting and engaging platform for testing and refining
+            your system.
+
+            In conclusion, the top view car game project that you are creating is an innovative and exciting simulation
+            of neural network reinforcement with genetic algorithm. Through this project, you can gain valuable insights
+            into the world of artificial intelligence and contribute to the ongoing development of this fascinating
+            field.
+        </p>
 
         <div class="grid-3">
             <div class="small-insights">
-                <h3 class="sub-heading">item 1</h3>
-                <p class="para">Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae officia ut explicabo
-                    commodi incidunt, a laborum minima, aliquam inventore iusto optio! Minus amet minima ducimus quos
-                    nisi quod in quasi?</p>
+                <h3 class="sub-heading">Population Size</h3>
+                <p class="para">In genetic algorithm, population size is a critical parameter that influences the
+                    performance of the algorithm.
+                    The population size refers to the number of individuals in a population, and it impacts the genetic
+                    diversity, convergence rate, and computation time.
+                    A larger population size may result in better exploration of the search space, but it can also lead
+                    to slower convergence and higher computational cost.
+                    On the other hand, a smaller population size can lead to premature convergence and decreased
+                    diversity.
+                    Therefore, selecting an appropriate population size is crucial for achieving optimal performance in
+                    genetic algorithm.</p>
             </div>
             <div class="small-insights">
-                <h3 class="sub-heading">item 2</h3>
-                <p class="para">Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae officia ut explicabo
-                    commodi incidunt, a laborum minima, aliquam inventore iusto optio! Minus amet minima ducimus quos
-                    nisi quod in quasi?</p>
+                <h3 class="sub-heading">Crossover Rate</h3>
+                <p class="para">In genetic algorithm, crossover rate is a parameter that determines the probability of
+                    two individuals in a population exchanging genetic information during reproduction. It influences
+                    the exploration and exploitation balance of the algorithm by regulating the extent to which the
+                    algorithm explores new solutions and exploits current ones. A higher crossover rate results in a
+                    higher probability of producing diverse offspring, while a lower rate favors the exploitation of
+                    existing good solutions. Thus, selecting an appropriate crossover rate is crucial for achieving an
+                    optimal balance between exploration and exploitation in genetic algorithm.</p>
             </div>
             <div class="small-insights">
-                <h3 class="sub-heading">item 3</h3>
-                <p class="para">Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae officia ut explicabo
-                    commodi incidunt, a laborum minima, aliquam inventore iusto optio! Minus amet minima ducimus quos
-                    nisi quod in quasi?</p>
+                <h3 class="sub-heading">Mutation Rate</h3>
+                <p class="para">In genetic algorithm, mutation rate is a parameter that determines the probability of
+                    introducing random changes in the genetic material of individuals during reproduction. It provides a
+                    way to maintain diversity in the population by allowing new genetic material to be introduced into
+                    the gene pool. A higher mutation rate increases the probability of producing diverse offspring, but
+                    it may also slow down the convergence of the algorithm. Therefore, selecting an appropriate mutation
+                    rate is essential for balancing the exploration of new solutions with the exploitation of current
+                    ones in genetic algorithm.</p>
             </div>
             <div class="small-insights">
-                <h3 class="sub-heading">item 1</h3>
-                <p class="para">Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae officia ut explicabo
-                    commodi incidunt, a laborum minima, aliquam inventore iusto optio! Minus amet minima ducimus quos
-                    nisi quod in quasi?</p>
+                <h3 class="sub-heading">Steering Constant</h3>
+                <p class="para">Steering constant is a fixed value that dictates the amount of steering input needed to turn the wheels by a particular angle. This value is used to calculate the steering behavior of the virtual vehicle and ensure that it behaves realistically. By setting an appropriate steering constant, the simulation can provide a realistic and accurate representation of how the car would handle in real life. This can help improve the quality and accuracy of the simulation, making it more useful for training, testing, or entertainment purposes.</p>
             </div>
             <div class="small-insights">
-                <h3 class="sub-heading">item 2</h3>
-                <p class="para">Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae officia ut explicabo
-                    commodi incidunt, a laborum minima, aliquam inventore iusto optio! Minus amet minima ducimus quos
-                    nisi quod in quasi?</p>
+                <h3 class="sub-heading">Breaking Constant</h3>
+                <p class="para">Braking constant is a fixed value that determines the amount of braking input required to stop the wheels by reducing the vehicle's velocity. This value is essential for calculating the braking behavior of the virtual car and ensuring that it behaves realistically. By setting an appropriate braking constant, the simulation can provide a realistic and accurate representation of how the car would brake in real-life scenarios. This can help improve the quality and accuracy of the simulation, making it more useful for training, testing, or entertainment purposes.</p>
             </div>
             <div class="small-insights">
-                <h3 class="sub-heading">item 3</h3>
-                <p class="para">Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae officia ut explicabo
-                    commodi incidunt, a laborum minima, aliquam inventore iusto optio! Minus amet minima ducimus quos
-                    nisi quod in quasi?</p>
+                <h3 class="sub-heading">Maximum Velocity</h3>
+                <p class="para">The top speed of a car refers to the maximum velocity it can reach. When the vehicle hits this limit, its acceleration drops to zero, and it cannot go any faster. The top speed is determined by various factors such as the engine power, aerodynamics, and weight of the car. It is a crucial specification that indicates the vehicle's performance capability and limits. Knowing the top speed of a car is important for drivers to ensure safe and legal driving practices, as well as to make informed decisions about the car's usage and capabilities.</p>
             </div>
             <div class="small-insights">
-                <h3 class="sub-heading">item 1</h3>
-                <p class="para">Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae officia ut explicabo
-                    commodi incidunt, a laborum minima, aliquam inventore iusto optio! Minus amet minima ducimus quos
-                    nisi quod in quasi?</p>
+                <h3 class="sub-heading">Minimum Velocity</h3>
+                <p class="para">Minimum velocity value is used to prevent vehicles from remaining stationary for extended periods. This value ensures that the car continues to move, even if the driver does not apply any input. The minimum velocity value represents the minimum speed at which the car can travel, and the simulation engine constantly applies a force to keep the car moving at this speed or higher. This ensures that the car behaves realistically, as vehicles in real life cannot remain stationary unless they are braked or blocked. Knowing the minimum velocity of a car is important for ensuring accurate simulations and training programs.</p>
             </div>
             <div class="small-insights">
-                <h3 class="sub-heading">item 2</h3>
-                <p class="para">Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae officia ut explicabo
-                    commodi incidunt, a laborum minima, aliquam inventore iusto optio! Minus amet minima ducimus quos
-                    nisi quod in quasi?</p>
+                <h3 class="sub-heading">Acceleration</h3>
+                <p class="para">Acceleration refers to the rate of change of velocity over time. In a car simulation, acceleration is an essential factor that determines how quickly the car can increase its speed from a standstill or while moving. The acceleration value is often determined by the engine power, weight, and other factors of the virtual vehicle. It is used to ensure that the simulation behaves realistically, allowing for accurate representation of real-life driving scenarios.</p>
             </div>
             <div class="small-insights">
-                <h3 class="sub-heading">item 3</h3>
-                <p class="para">Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae officia ut explicabo
-                    commodi incidunt, a laborum minima, aliquam inventore iusto optio! Minus amet minima ducimus quos
-                    nisi quod in quasi?</p>
+                <h3 class="sub-heading">Camera length</h3>
+                <p class="para">Camera length is the distance between the camera viewpoint and the object being viewed. In a car simulation, camera length is often used to adjust the view of the virtual car. By changing the camera length, the view of the car can be altered, allowing for better visualization of the surroundings, road, and other objects. The camera length value can be set to provide a more realistic and immersive experience, making the simulation more engaging for users.</p>
+            </div>
+            <div class="small-insights">
+                <h3 class="sub-heading">Camera divergence</h3>
+                <p class="para">Camera divergence is the angle at which the virtual camera views the scene. In a car simulation, camera divergence is often used to simulate the perspective of the driver while driving. By adjusting the camera divergence, the virtual car can be viewed from different angles, providing a more realistic and immersive experience. The camera divergence value can be set to match the specifications of the car being simulated or to provide a more cinematic experience for users</p>
+            </div>
+            <div class="small-insights">
+                <h3 class="sub-heading">Generation lifetime</h3>
+                <p class="para">In a car simulation, generation lifetime refers to the lifespan of a generation of vehicles or drivers within the simulation. This value is often used to set the duration of a simulation or to control how long a particular generation of cars or drivers remains in the simulation. By setting an appropriate generation lifetime value, the simulation can accurately represent the effects of long-term changes in the virtual environment, such as changes in traffic patterns, road conditions, or vehicle specifications.</p>
             </div>
         </div>
     </div>
@@ -226,43 +252,56 @@
                 <h4 class="small-light-heading">save model</h4>
                 <p class="para">save model to database</p>
             </div>
-            <button class="setting-btn">save</button>
+            <button class="setting-btn" id="save-model-to-db">
+                <div class="button-loader" id="bl-1"></div>
+                save
+            </button>
         </div>
         <div class="setting-wrap">
+            <div class="setting-statement">
+                <h4 class="small-light-heading">cameras</h4>
+                <p class="para">show camera rays</p>
+            </div>
+            <button class="setting-btn right" id="show-camera-rays">show</button>
+            <button class="setting-btn active" id="hide-camera-rays">hide</button>
+        </div>
+        <div class="setting-wrap">
+            <div class="setting-statement">
+                <h4 class="small-light-heading">car velocity</h4>
+                <p class="para">show the velocity vector of car.</p>
+            </div>
+            <button class="setting-btn right" id="show-car-velocity-vector">show</button>
+            <button class="setting-btn active" id="hide-car-velocity-vector">hide</button>
+        </div>
+        <div class="setting-wrap">
+            <div class="setting-statement">
+                <h4 class="small-light-heading">car detials</h4>
+                <p class="para">show the exact details of car.</p>
+            </div>
+            <button class="setting-btn right" id="show-car-detail-section">show</button>
+            <button class="setting-btn active" id="hide-car-detail-section">hide</button>
+        </div>
+        <div class="setting-wrap">
+            <div class="setting-statement">
+                <h4 class="small-light-heading">draw new map</h4>
+                <p class="para">create a new map with dedicated map drawer tool.</p>
+            </div>
+            <button class="setting-btn" id="go-to-map-drawer">go to page</button>
+        </div>
+        <div class="setting-wrap">
+            <div class="setting-statement">
+                <h4 class="small-light-heading">select new map</h4>
+                <p class="para">select already created map</p>
+            </div>
+            <button class="setting-btn" id="go-to-map-selector">go to page</button>
+        </div>
+        <!-- <div class="setting-wrap">
             <div class="setting-statement">
                 <h4 class="small-light-heading">save model</h4>
                 <p class="para">save model to database</p>
             </div>
             <button class="setting-btn">save</button>
-        </div>
-        <div class="setting-wrap">
-            <div class="setting-statement">
-                <h4 class="small-light-heading">save model</h4>
-                <p class="para">save model to database</p>
-            </div>
-            <button class="setting-btn">save</button>
-        </div>
-        <div class="setting-wrap">
-            <div class="setting-statement">
-                <h4 class="small-light-heading">save model</h4>
-                <p class="para">save model to database</p>
-            </div>
-            <button class="setting-btn">save</button>
-        </div>
-        <div class="setting-wrap">
-            <div class="setting-statement">
-                <h4 class="small-light-heading">save model</h4>
-                <p class="para">save model to database</p>
-            </div>
-            <button class="setting-btn">save</button>
-        </div>
-        <div class="setting-wrap">
-            <div class="setting-statement">
-                <h4 class="small-light-heading">save model</h4>
-                <p class="para">save model to database</p>
-            </div>
-            <button class="setting-btn">save</button>
-        </div>
+        </div> -->
     </div>
 </body>
 <script src="../scripts/new_driving_physics_utils.js"></script>

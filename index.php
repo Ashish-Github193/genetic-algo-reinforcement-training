@@ -34,7 +34,7 @@
         $_SESSION['track-date-created'] = 'nothing';
     }
     // $_SESSION['track-image'] = '';
-
+    
     if (!$_SESSION['model-id']) {
         $_SESSION['model-name'] = '';
         $_SESSION['model-one-weights'] = '';
@@ -43,8 +43,9 @@
         $_SESSION['model-activations'] = '';
         $_SESSION['model-fitness'] = '';
         $_SESSION['model-generation'] = '';
+        $_SESSION['model-save-type'] = ''; // temp / perm
     }
-    
+
     // if (!$_SESSION['name']) {
     //     $_SESSION['name'] = 'avinash';
     // }
@@ -63,7 +64,7 @@
 
     <div id="main">
 
-        <div id="layerFirst" class="layer">
+        <!-- <div id="layerFirst" class="layer">
             <div id="layerFirst_node1" class="node active_node disabled_node"></div>
             <div id="layerFirst_node2" class="node active_node disabled_node"></div>
             <div id="layerFirst_node3" class="node active_node disabled_node"></div>
@@ -76,7 +77,29 @@
             <div id="layerLast_node2" class="node active_node disabled_node"></div>
             <div id="layerLast_node3" class="node active_node disabled_node"></div>
             <div id="layerLast_node4" class="node active_node disabled_node"></div>
-        </div>
+        </div> -->
+
+        <?php
+
+        $neuron_template = '<div id="layerFirst" class="layer" style="border-color: transparent;"><div id="layerFirst_node1" class="node active_node"></div><div id="layerFirst_node2" class="node active_node"></div> <div id="layerFirst_node3" class="node active_node"></div><div id="layerFirst_node4" class="node active_node"></div><div id="layerFirst_node5" class="node active_node"></div></div>';
+
+        $shape = explode(",", $_SESSION['model-shape']);
+        $layers = explode(",", $_SESSION['model-activations']);
+
+        for ($i = 0; $i < count($layers); $i++) {
+            $neuron_template .= '<div id="layer' . ($i + 1) . '" class="layer ' . $layers[$i] . '" style="border-color: transparent;">';
+            for ($j = 0; $j < (int) $shape[$i]; $j++) {
+                $neuron_template .= '<div class="node active_node" id="layer' . ($i + 1) . '_node' . ($j + 1) . '"></div>';
+            }
+            $neuron_template .= '</div>';
+        }
+        $neuron_template .= '<div id="layerLast" class="layer" style="border-color: transparent;"><div id="layerLast_node1" class="node active_node"></div><div id="layerLast_node2" class="node active_node"></div><div id="layerLast_node3" class="node active_node"></div><div id="layerLast_node4" class="node active_node"></div></div>';
+        // echo $shape . "layers" . $layers;
+        echo $neuron_template
+
+        ?>
+
+
 
     </div>
 
@@ -100,19 +123,15 @@
                 <!-- heading -->
                 <div id="model-list0" class="general-content-model-heading">
                     <div class="ml-info">
-                        <div class="ml-primary-info">
-                            <div id="sno0" class="ml-sno
-                                    content-model-class-text">Sno.</div>
-                            <div id="name0" class="ml-name
-                                    content-model-class-text">Model</div>
+                        <div class="ml-primary-info ">
+                            <div id="sno0" class="ml-sno content-model-class-text hidden">Sno.</div>
+                            <div id="name0" class="ml-name content-model-class-text">Model</div>
                         </div>
                         <div class="ml-secondary-info">
-                            <div id="nol0" class="ml-nol
-                                    content-model-class-text">n-layers</div>
-                            <div id="fitness0" class="ml-fit
-                                    content-model-class-text">fitness</div>
-                            <div id="generation0" class="ml-gen
-                                    content-model-class-text">gen</div>
+                            <div id="nol0" class="ml-nol  content-model-class-text">n-layers</div>
+                            <div id="fitness0" class="ml-fit content-model-class-text">fit</div>
+                            <div id="generation0" class="ml-gen  content-model-class-text">gen</div>
+                            <div id="input-shape0" class="ml-noc  content-model-class-text">ci</div>
                         </div>
                     </div>
                 </div>
@@ -129,34 +148,39 @@
                 if (!$result) {
                     echo "error: " . mysqli_error($conn);
                 } else {
-
+                    $id = 1;
                     if (mysqli_num_rows($result) > 0) {
 
                         while ($row = mysqli_fetch_assoc($result)) {
                             $serial = $row['serial'];
                             $modelName = $row['model_name'];
-                            $layers = $row['layers'];
+                            $layers = count(explode(",", $row['layers']));
                             $fitness = $row['fitness'];
                             $generation = $row['generation'];
+                            $inputShape = $row['input_shape'];
+                            $modelShape = implode("-", explode(",", $row['shape']));
+                            // $modelShape = $row['shape'];
+                
 
-
-                            echo '<div id="model-list' . $serial . '" class="general-content-model">
+                            echo '<div id="model-list' . $id . '" class="general-content-model non-editable">
                                 <div class="ml-info">
                                     <div class="ml-primary-info">
-                                        <div id="sno' . $serial . '" class="ml-sno content-model-class-text">m_' . $serial . '</div>
-                                        <div id="name' . $serial . '" class="ml-name content-model-class-text">' . $modelName . '</div>
+                                        <div id="sno' . $id . '" class="ml-sno content-model-class-text hidden">m_' . $serial . '</div>
+                                        <div id="name' . $id . '" class="ml-name content-model-class-text">' . $modelName . '</div>
                                     </div>
                                     <div class="ml-secondary-info">
-                                        <div id="nol' . $serial . '" class="ml-nol content-model-class-text">' . count(explode(', ', $layers)) . ' layers</div>
-                                        <div id="fitness' . $serial . '" class="ml-fit content-model-class-text">' . $fitness . '</div>
-                                        <div id="generation' . $serial . '" class="ml-gen content-model-class-text">' . $generation . '</div>
+                                        <div id="nol' . $id . '" class="ml-nol content-model-class-text">' . $layers . ' layers</div>
+                                        <div id="fitness' . $id . '" class="ml-fit content-model-class-text">' . $fitness . '</div>
+                                        <div id="generation' . $id . '" class="ml-gen content-model-class-text">' . $generation . '</div>
+                                        <div id="input-shape' . $id . '" class="ml-noc content-model-class-text">' . $inputShape . '</div>
                                     </div>
                                 </div>
                                 <div class="ml-operations">
-                                    <div id="load' . $serial . '" class="ml-ops" onclick=loadModel(' . $serial . ')>load</div>
-                                    <div id="delete' . $serial . '" class="ml-ops" onclick=deleteModel(' . $serial . ')>delete</div>
+                                    <div id="load' . $id . '" class="ml-ops" onclick=loadModel(' . $id . ')>load</div>
+                                    <div id="delete' . $id . '" class="ml-ops" onclick=deleteModel(' . $id . ')>delete</div>
                                 </div>
                             </div>';
+                            $id++;
                         }
                     }
                 }
@@ -209,7 +233,7 @@
 
                 </div>
 
-                <?php                
+                <?php
 
                 if ($_SESSION['population_size']) {
                     $population = $_SESSION['population_size'];
@@ -279,14 +303,6 @@
                     <div id="sub-9"><i class="fa fa-minus-circle" aria-hidden="true"></i></div>
                     <div id="num-9">' . $cd . '</div>
                     <div id="add-9"><i class="fa fa-plus-circle" aria-hidden="true"></i></div>
-                </div>
-            </div>
-            <div class="option" id="camera-number-setting">
-                <span class="option-name">Camera Number</span>
-                <div class="simulation-settings buttons" >
-                    <div id="sub-10"><i class="fa fa-minus-circle" aria-hidden="true"></i></div>
-                    <div id="num-10">' . $cn . '</div>
-                    <div id="add-10"><i class="fa fa-plus-circle" aria-hidden="true"></i></div>
                 </div>
             </div>
             <div class="option" id="generation-alive-time-seetting">
