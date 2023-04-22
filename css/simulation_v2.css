@@ -211,9 +211,15 @@ h3.sub-heading {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 20px;
+}
+
+.right {
+    margin-left: auto;
 }
 
 .setting-btn {
+    position: relative;
     min-width: 100px;
     padding: 8px 20px;
     font-size: 16px;
@@ -222,11 +228,29 @@ h3.sub-heading {
     color: var(--font-clr);
     border-radius: 8px;
     letter-spacing: 1px;
+    transition: 200ms;
+    opacity: 95%;
+    overflow: hidden;
+}
+.setting-btn.active {
+    color: var(--blank-clr);
+    background-color: var(--accent-clr);
+    transition: 500ms;
 }
 
 .setting-btn:hover {
     background-color: var(--font-clr);
     color: var(--blank-clr);
+}
+.button-loader {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 100%;
+    background-color: var(--accent-clr);
+    z-index: -1;
+    border-radius: 8px 0 0 8px;
 }
 
 h4.small-light-heading {
@@ -239,6 +263,8 @@ h4.small-light-heading {
 }
 
 #show-panel {
+    position: sticky;
+    bottom: 0;
     margin-top: 50px;
     margin-bottom: 50px;
     padding: 10px 50px;

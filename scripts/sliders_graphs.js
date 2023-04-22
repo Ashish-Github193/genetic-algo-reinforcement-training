@@ -1,108 +1,5 @@
-// $(function () {
-//   $('#sliders input[type="range"]').each(function () {
-//     var $slider = $(this);
-//     var $label = $slider.prev();
-//     $label.text(`${$label.text().split(":")[0]}: ${$slider.val()}`);
-//     $slider.on('input', function () {
-//       var value = $slider.val();
-//       var min_value = $slider.attr('min');
-//       var max_value = $slider.attr('max');
-//       $label.text(`${$label.text().split(":")[0]}: ${value}`);
-//       $slider.css('background', `linear-gradient(to right, #53898a 0%, #528485 ${((value - min_value) / (max_value - min_value)) * 100}%, #999 ${((value - min_value) / (max_value - min_value)) * 100}%, #999 100%)`);
-//     }).trigger('input'); // Trigger the input event for each range input
-//   });
-// });
 
-// function getSliderValues() {
-//   var sliderValues = {};
-//   $('#sliders input[type="range"]').each(function () {
-//     var label = $(this).prev().text().split(":")[0];
-//     var value = parseInt($(this).val());
-//     sliderValues[label] = value;
-//   });
-//   return JSON.stringify(sliderValues);
-// }
 
-// // Define common chart options
-// const chartOptions = {
-//   responsive: true,
-//   maintainAspectRatio: true,
-//   aspectRatio: 2,
-//   animation: { duration: 0 },
-//   plugins: {
-//     // title: { display: true, color: "#000000" },
-//     title: { display: true, color: "#9BD0F5" },
-//     // colors: { forceOverride: true },
-//   },
-// };
-
-// // Define a function to create and update charts
-// function createAndUpdateChart(canvasId, label, title) {
-//   const canvas = document.getElementById(canvasId);
-//   const ctx = canvas.getContext("2d");
-//   const data = {
-//     labels: Array.from({ length: 30 }, (_, i) => i + 1),
-//     datasets: [
-//       {
-//         label,
-//         data: Array.from({ length: 30 }, () => Math.floor(Math.random() * 100)),
-//         borderColor: "rgb(0, 0, 0)",
-//         // borderColor: "rgb(255, 99, 255)",
-//         backgroundColor: "rgb(0, 0, 0)",
-//         // backgroundColor: "#9BD0F5",
-//         fill: false,
-//       },
-//     ],
-//   };
-//   const options = { ...chartOptions, plugins: { ...chartOptions.plugins, title: { ...chartOptions.plugins.title, text: title } } };
-//   const chart = new Chart(ctx, { type: "line", data, options });
-//   setInterval(() => {
-//     const newValue = Math.floor(Math.random() * 100);
-//     chart.data.datasets[0].data.push(newValue);
-//     chart.data.datasets[0].data.shift();
-//     chart.update();
-//   }, 1000);
-// }
-
-// // Create and update charts
-// createAndUpdateChart("generationFitnessChart", "Fitness", "Fitness-Generation");
-// createAndUpdateChart("speedGenerationChart", "Speed", "Speed-Generation");
-// createAndUpdateChart("successRateOverGenerationsChart", "SuccessRate", "SuccessRate-Generations");
-
-// baseCircle = $(".circle")
-// circles = $(".mini_circle")
-
-// baseCircle.click(() => {
-//   circles.toggleClass("finished");
-// })
-
-// s_panel = $("#s-panel");
-// slide_panel = $("#slide-panel");
-
-// slide_panel.click(() => {
-//   s_panel.toggleClass("closed");
-// })
-
-// v_panel = $("#v-panel");
-// slide_v_panel = $("#slide-v-panel");
-
-// slide_v_panel.click(() => {
-//   v_panel.toggleClass("closed");
-// })
-
-// notch = $("#notch");
-// option_menu = $("#option-menu");
-
-// notch.click(() => {
-//   option_menu.toggleClass("option-menu-clicked");
-// })
-
-var blank_clr = getComputedStyle(document.documentElement).getPropertyValue('--blank-clr');
-var accent_clr = getComputedStyle(document.documentElement).getPropertyValue('--accent-clr');
-var side_clr = getComputedStyle(document.documentElement).getPropertyValue('--side-clr');
-var extra_clr = getComputedStyle(document.documentElement).getPropertyValue('--extra-clr');
-var font_clr = getComputedStyle(document.documentElement).getPropertyValue('--font-clr');
-var light_font = getComputedStyle(document.documentElement).getPropertyValue('--light-clr');
 
 
 // jQuery code
@@ -124,9 +21,11 @@ $(document).ready(function () {
       console.log($slider.val());
       if ($slider.attr('id') == 'population-slider') {
         // code for population
-        population = $slider.val();
-        genetic_algo = new GENETIC_ALGORITHM(population_size = population, crossover_rate = crossoverRate / 100, mutation_rate = mutationRate / 10, elite_networks = 2);
-        genetic_algo.CREATE_POPULATION(size = population, parent1_weights = genetic_algo.parent1.weights, parent2_weights = genetic_algo.parent2.weights);
+        population = parseInt($slider.val());
+        // genetic_algo = new GENETIC_ALGORITHM(population_size = population, crossover_rate = crossoverRate / 100, mutation_rate = mutationRate / 10, elite_networks = 2);
+        p1w = genetic_algo.parent1.weights;
+        p2w = genetic_algo.parent2.weights;
+        genetic_algo.CREATE_POPULATION(size = population, parent1_weights = p1w, parent2_weights = p2w);
         carList = Array.from({ length: population }, () => new Car(spawnPoint[0], spawnPoint[1]));
         // createNewPopulation();
       }
@@ -154,13 +53,13 @@ $(document).ready(function () {
 
       if ($slider.attr('id') == 'max-velocity-slider') {
         // code for maximum velocity
-        $sliderValue  = maxSpeed = $slider.val() / 10;
+        $sliderValue = maxSpeed = $slider.val() / 10;
         carList.forEach(car => car.maxSpeed = $sliderValue);
       }
 
       if ($slider.attr('id') == 'min-velocity-slider') {
         // code for minimum velocity
-        $sliderValue  = minSpeed = $slider.val() / 10;
+        $sliderValue = minSpeed = $slider.val() / 10;
         carList.forEach(car => car.minSpeed = $sliderValue);
       }
 
@@ -176,7 +75,7 @@ $(document).ready(function () {
         carList.forEach(car => car.cameras.forEach(camera => camera.maxRange = $sliderValue));
         console.log("camera length changed to: ", typeof $sliderValue);
       }
-      
+
       if ($slider.attr('id') == 'camera-divergence-slider') {
         // code for camera divergence
         $sliderValue = cameraDivergence = $slider.val();
@@ -185,7 +84,7 @@ $(document).ready(function () {
 
       if ($slider.attr('id') == 'gen-life-time-slider') {
         // code for generation lifetime
-        $sliderValue = $slider.val();
+        generationAliveTime = parseInt($slider.val()) * 1000;
       }
     })
     // if ($slider.attr('id') == )
@@ -244,48 +143,18 @@ $(document).ready(function () {
     $('#slider-btn, #graph-btn, #insight-btn').css('color', ''); // Reset text color of other buttons
   });
 
+  // setInterval(() => {
+  //   // Generate random x and y coordinates
+  //   const x = Math.floor(Math.random() * 30) + 1;
+  //   const y = Math.floor(Math.random() * 50);
 
-  const chartOptions = {
-    responsive: true,
-    animation: { duration: 100 },
-    plugins: {
-      title: { display: true, color: accent_clr },
-      // colors: { forceOverride: true },
-    },
-  };
+  //   // Update chart data with new coordinates
+  //   chart1.updateChartData(x, y);
+  //   chart2.updateChartData(x, y);
+  //   chart3.updateChartData(x, y);
+  // }, 1000);
 
-  // Define a function to create and update charts
-  function createAndUpdateChart(canvasId, label, title) {
-    const ctx = document.getElementById(canvasId);
-    // const ctx = canvas.getContext("2d");
-    const data = {
-      labels: Array.from({ length: 30 }, (_, i) => i + 1),
-      datasets: [
-        {
-          label,
-          data: Array.from({ length: 30 }, () => Math.floor(Math.random() * 50)),
-          cubicInterpolationMode: 'monotone',
-          borderWidth: 5,
-          borderColor: accent_clr,
-          backgroundColor: side_clr,
-          fill: true,
-        },
-      ],
-    };
-    const options = { ...chartOptions, plugins: { ...chartOptions.plugins, title: { ...chartOptions.plugins.title, text: title } } };
-    const chart = new Chart(ctx, { type: "line", data: data, options: options });
-    setInterval(() => {
-      const newValue = Math.floor(Math.random() * 100);
-      chart.data.datasets[0].data.push(newValue);
-      chart.data.datasets[0].data.shift();
-      chart.update();
-    }, 1000);
-  }
 
-  // Create and update charts
-  createAndUpdateChart("generationFitnessChart", "Fitness", "Fitness-Generation");
-  createAndUpdateChart("speedGenerationChart", "Speed", "Speed-Generation");
-  createAndUpdateChart("successRateOverGenerationsChart", "SuccessRate", "SuccessRate-Generations");
 
   $("#pause-btn").click(() => {
     $('#pause-btn').css('background-color', '#f44');
@@ -320,8 +189,59 @@ $(document).ready(function () {
     next = 1;
     generation = 1;
   });
+
+  $("#save-model-to-db").click((event) => {
+    console.log("model saved to databse");
+    saveModelWeightsToServer();
+    $("#bl-1").animate(
+      {
+        "width": '100%',
+      },
+      300,
+      function () {
+        $(this).width(0);
+      }
+    );
+
+    // $('#next-gen-btn').click();
+  });
+  $('#show-camera-rays').click(function () {
+    drawCameraRays = 1;
+    $(this).addClass('active');
+    $('#hide-camera-rays').removeClass('active');
+  });
+  $('#hide-camera-rays').click(function () {
+    drawCameraRays = 0;
+    $(this).addClass('active');
+    $('#show-camera-rays').removeClass('active');
+  });
+  $('#show-car-velocity-vector').click(function () {
+    drawVelocityVector = 1;
+    $(this).addClass('active');
+    $('#hide-car-velocity-vector').removeClass('active');
+  });
+  $('#hide-car-velocity-vector').click(function () {
+    drawVelocityVector = 0;
+    $(this).addClass('active');
+    $('#show-car-velocity-vector').removeClass('active');
+  });
+  $('#show-car-detail-section').click(function () {
+    drawExactDetails = 1;
+    $(this).addClass('active');
+    $('#hide-car-detail-section').removeClass('active');
+  });
+  $('#hide-car-detail-section').click(function () {
+    drawExactDetails = 0;
+    $(this).addClass('active');
+    $('#show-car-detail-section').removeClass('active');
+  });
+
+
+
+  $('#pause-btn').click();
+
 });
 
-function car() {
-  carList.forEach(car => console.log(car));
-}
+// function car() {
+//   carList.forEach(car => console.log(car));
+// }

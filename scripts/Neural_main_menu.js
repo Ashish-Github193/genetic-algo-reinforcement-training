@@ -92,6 +92,8 @@ $('#general').click(() => {
 
 $('#create-new-model').click((e) => {
     if (!tempModelCreated) {
+        NumberOfLayers = 0;
+        global_activations = [];
         tempModelCreated = 'temp';
         numberOfModels = $('.general-content-model').length + 1;
         const rowTemplate = '<div id="model-list' + numberOfModels + '" class="general-content-model"><div class="ml-info"><div class="ml-primary-info"><div id="sno' + numberOfModels + '" class="ml-sno hidden">t_' + numberOfModels + '.</div><div id="name' + numberOfModels + '" class="ml-name editable" contenteditable="true">t_model_' + numberOfModels + '</div></div><div class="ml-secondary-info"><div id="nol' + numberOfModels + '" class="ml-nol ">0 layers</div><div id="fitness' + numberOfModels + '" class="ml-fit">-</div><div id="generation' + numberOfModels + '" class="ml-gen">-</div><div id="input-shape' + numberOfModels + '" class="ml-noc content-model-class-text" contenteditable="true">5</div></div></div><div class="ml-operations"><div id="load' + numberOfModels + '" class="ml-ops" onclick=saveNewModel(' + numberOfModels + ')>save</div><div id="delete' + numberOfModels + '" class="ml-ops ml-ops-del-btn" onclick="deleteModel(\'' + numberOfModels + '\')">delete</div></div></div>';
@@ -100,7 +102,7 @@ $('#create-new-model').click((e) => {
         $('#main').html(neuronTemplate);
         updateConnections();
         $('.node').each((_, node) => $(node).on('click', updateModelRowForNewModel));
-    }else {
+    } else {
         return 0;
     }
 });
@@ -115,6 +117,9 @@ function saveNewModel(idx) {
     const modelName = $('#name' + idx).text();
     const activations = findModelActivation().join(',');
     const inputShape = $('#input-shape' + idx).text();
+
+    const model_1 = createRandomWeight(parseInt(inputShape), shape.split(',').map(ele => parseInt(ele)));
+    const model_2 = createRandomWeight(parseInt(inputShape), shape.split(',').map(ele => parseInt(ele)));
 
     if ((modelName == '') || (shape == '') || (activations == '') || (!inputShape)) {
         showAlert('Model Not Saved', "Enter required parameters carefully.", () => { console.log('') }, 5000);
@@ -131,6 +136,8 @@ function saveNewModel(idx) {
         actications: activations,
         shape: shape,
         inputShape: inputShape,
+        model_1: model_1,
+        model_2: model_2,
     }
     const xhr = new XMLHttpRequest();
     xhr.open('POST', 'php/main.php', true);
@@ -140,12 +147,30 @@ function saveNewModel(idx) {
         $('#load' + idx).text('load');
         tempModelCreated = false;
         showAlert('Model Saved', 'models weights of ' + modelName + ' is saved.', () => { console.log('') });
-        setTimeout(()=>{window.location.href = '../genetic-algo-reinforcement-training/index.php';}, 5000)
+        setTimeout(() => { window.location.href = '../genetic-algo-reinforcement-training/index.php'; }, 5000);
     }
     xhr.send(JSON.stringify(settings));
-    alert("model name is: " + modelName + " model shape is: " + shape +  "activations are: " + activations + " input shape is: " + inputShape + ' saved to databse'); 
+    alert("model name is: " + modelName + " model shape is: " + shape + "activations are: " + activations + " input shape is: " + inputShape + ' saved to databse');
 }
 
+function createRandomWeight(input_shape, num_neurons) {
+    let weights = [];
+    for (let index = 0; index < num_neurons.length; index++) {
+        if (index == 0) { weights.push(new Array(input_shape).fill(0).map(() => Array.from({ length: num_neurons[index] }, () => Math.random() * [-1, 1][rand(1)]))); }
+
+        else { weights.push(new Array(num_neurons[index - 1]).fill(0).map(() => Array.from({ length: num_neurons[index] }, () => Math.random() * [-1, 1][rand(1)]))); }
+    }
+    // console.log(weights);
+    return weights.flat(2).join(',');
+}
+
+function rand(min, max) {
+    return Math.floor(Math.random() * (max
+        ? (max - min + 1)
+        : min + 1)) + (max
+        ? min
+        : 0);
+}
 
 function deleteModel(e) {
     console.log(e);
@@ -169,6 +194,7 @@ function loadModel(idx) {
     xhr.open('POST', 'php/main.php', true);
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.onload = () => {
+        // console.log(xhr.responseText);
         const data = JSON.parse(xhr.response);
         $('#main').html(data.template);
         updateConnections();
@@ -464,15 +490,15 @@ function triggerMainUploadButton() {
 }
 
 $('#track-img-upload-btn, #track-preview').on("change", function () {
-    const file = this.files[0];
+    const file = files[0];
     if (file) {
         const reader = new FileReader();
         reader.addEventListener("load", function () {
             $('.preview-wrapper')[0].style.display = 'block';
             $('#psudo-track-img-upload-btn').css('display', 'none');
             $('#upload').css('display', 'block');
-            $('#track-preview')[0].setAttribute("src", this.result);
-            customTrackImage = this.result;
+            $('#track-preview')[0].setAttribute("src", result);
+            customTrackImage = result;
             showAlert('Image saved', '', false, 1000);
         });
         reader.readAsDataURL(file);

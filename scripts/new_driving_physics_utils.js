@@ -1,21 +1,79 @@
+// colours 
+
+var blank_clr = getComputedStyle(document.documentElement).getPropertyValue('--blank-clr');
+var accent_clr = getComputedStyle(document.documentElement).getPropertyValue('--accent-clr');
+var side_clr = getComputedStyle(document.documentElement).getPropertyValue('--side-clr');
+var extra_clr = getComputedStyle(document.documentElement).getPropertyValue('--extra-clr');
+var font_clr = getComputedStyle(document.documentElement).getPropertyValue('--font-clr');
+var light_font = getComputedStyle(document.documentElement).getPropertyValue('--light-clr');
+
 // utility functions
 
 function timeDiff(startTime, duration) {
     if (((Date.now() - startTime) >= duration)) {
-        console.log('duration is over');
+        // console.log('duration is over');
         return true;
-    }
+    } else return false;
 }
 
-// function updateBestCarData(carList, manual_steer_data, frameIndex) {
-//       speed_o.text(`${roundNumber(carList[0].velocity.mod, 3)}`);
-//       acc_o.text(`${carList[0].acceletation}`);
-//       angle_o.text(roundNumber(carList[0].r * 180, 3) + " deg");
-//       tyre_o.text(roundNumber(carList[0].frontTyreR * 180, 3) + " deg");
-//       manual_steer_data_o.text(manual_steer_data);
-//       frame_o.text(frameIndex);
-//       population_o.text(CountLiveCars());
-// }
+function updateBestCarData(carList) {
+    $("#generation-box").text(generation);
+    let cars = carList;
+    const car = findObjectWithMaxAttribute(cars, 'fitness');
+    $("#fitness-box").text(roundNumber(car.fitness, 0));
+    $("#population-box").text(cars.filter(car => car.state == 'start').length + "/" + population);
+    if (fitnessList.length !== 0) {
+        $("#last-gen-fitness-box").text(roundNumber(fitnessList.at(-1), 0));
+    }else $("#last-gen-fitness-box").text(0);
+}
+
+function findObjectWithMaxAttribute(objects, attribute) {
+    /**
+     * Find the object with the maximum value of a given attribute in an array of objects.
+     *
+     * @param {Array} objects - Array of objects.
+     * @param {string} attribute - Attribute name to compare.
+     * @returns {Object|null} - Object with the maximum attribute value, or null if array is empty.
+     */
+    if (objects.length === 0) {
+        return null; // Return null if the array is empty
+    }
+
+    return objects.reduce(function (maxObject, currentObject) {
+        var maxAttributeValue = maxObject[attribute];
+        var currentAttributeValue = currentObject[attribute];
+
+        if (currentAttributeValue > maxAttributeValue) {
+            return currentObject;
+        } else {
+            return maxObject;
+        }
+    });
+}
+
+
+function sortObjectsByAttribute(objects, attribute) {
+    /**
+     * Sort an array of objects by a given attribute.
+     *
+     * @param {Array} objects - Array of objects.
+     * @param {string} attribute - Attribute name to sort by.
+     * @returns {Array} - Sorted array of objects.
+     */
+    return objects.sort(function (a, b) {
+        var attrA = a[attribute];
+        var attrB = b[attribute];
+
+        if (attrA < attrB) {
+            return 1;
+        }
+        if (attrA > attrB) {
+            return -1;
+        }
+        return 0;
+    });
+}
+
 
 function CountLiveCars() {
     return carList.filter((car) => (car.state == 'start')).length;
@@ -47,6 +105,10 @@ function getControlData(cameraData) {
 function CheckDeadCars() {
     let allStoppedStatus = carList.every((cars) => (cars.state == 'stop'));
     return allStoppedStatus;
+}
+
+function checkAliveCars() {
+    return carList.filter(car => (car.state == 'start')).length;
 }
 
 function getImageDataFaster(x, y) {
@@ -188,3 +250,76 @@ function createNewPopulation() {
     for (let i = 0; i < population; i++)
         carList.push(new Car(spawnPoint[0], spawnPoint[1]));
 }
+
+
+function createAndUpdateRealTimeChart(divId, labelX, labelY) {
+    // const canvasId = divId + "-canvas"; // Create a unique canvas ID based on the div ID
+    const ctx = document.getElementById(divId);
+    
+    const chartOptions = {
+        responsive: true,
+        animation: { duration: 100 },
+        plugins: {
+          title: { display: true, color: accent_clr },
+          // colors: { forceOverride: true },
+        },
+      };
+
+    const data = {
+      labels: [],
+      datasets: [
+        {
+          label: labelX + "-" + labelY,
+          data: [],
+          cubicInterpolationMode: "monotone",
+          borderWidth: 5,
+          borderColor: accent_clr,
+          backgroundColor: side_clr,
+          fill: true,
+        },
+      ],
+    };
+  
+    const options = {
+      ...chartOptions,
+      plugins: {
+        ...chartOptions.plugins,
+        title: {
+          ...chartOptions.plugins.title,
+          text: "",
+        },
+      },
+      scales: {
+        xAxes: [
+          {
+            scaleLabel: {
+              display: true,
+              labelString: labelX,
+            },
+          },
+        ],
+        yAxes: [
+          {
+            scaleLabel: {
+              display: true,
+              labelString: labelY,
+            },
+          },
+        ],
+      },
+    };
+  
+    const chart = new Chart(ctx, {
+      type: "line",
+      data: data,
+      options: options,
+    });
+  
+    return {
+      updateChartData: (y, x) => {
+        chart.data.labels.push(x);
+        chart.data.datasets[0].data.push(y);
+        chart.update();
+      },
+    };
+  }

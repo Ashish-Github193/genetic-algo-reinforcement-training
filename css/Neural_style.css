@@ -273,8 +273,8 @@ body {
 
 #menu-button {
     position: relative;
-    top: 2vh;
-    left: 1vw;
+    top: 10px;
+    left: 10px;
     width: 30px;
     height: 50px;
     font-size: 2em;

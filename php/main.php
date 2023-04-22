@@ -78,6 +78,8 @@ if ($request->func == 'load-shape-weights') {
         $fitness = $row['fitness'];
         $generation = $row['generation'];
 
+        // echo "input shape is: " . $inputShape;
+
         $neuron_template = '<div id="layerFirst" class="layer" style="border-color: transparent;"><div id="layerFirst_node1" class="node active_node"></div><div id="layerFirst_node2" class="node active_node"></div> <div id="layerFirst_node3" class="node active_node"></div><div id="layerFirst_node4" class="node active_node"></div><div id="layerFirst_node5" class="node active_node"></div></div>';
 
         $shape = explode(",", $shape);
@@ -107,7 +109,7 @@ if ($request->func == 'load-shape-weights') {
             "layers" => $layers,
             "template" => $neuron_template,
         );
-        echo "\n" . json_encode($data);
+        echo json_encode($data);
     }
 }
 
@@ -120,7 +122,10 @@ if ($request->func == 'save-model-weights') {
     $generation = $request->generation;
     $connection = mysqli_connect('localhost', 'root', '', 'neuroevolutionsimulation');
 
-    // echo $model1;
+    echo $model1;
+    echo "\n" . $model2;
+    echo "\n" . $fitness;
+    echo "\n" . $generation;
 
     if (!$connection) {
         echo "\ncouldnt cnnect to the server\n";
@@ -138,6 +143,8 @@ if ($request->func == 'save-model-weights') {
         echo "model weights saved successfully \n";
     }
 
+    echo "\nid is: " . $id;
+
 }
 
 if ($request->func == 'save-new-model') {
@@ -145,6 +152,8 @@ if ($request->func == 'save-new-model') {
     $activations = $request -> actications;
     $shape = $request -> shape;
     $inputShape = $request -> inputShape;
+    $modelOneWeights = $request -> model_1;
+    $modelTwoWeights = $request -> model_2;
 
     echo "model Name: " . $modelName . "\n";
     echo "model Activation: " . $activations. "\n";
@@ -162,12 +171,12 @@ if ($request->func == 'save-new-model') {
 
     // $sql = 'INSERT INTO `modeldata` (`serial`, `model_name`, `model_1`, `model_2`, `date`, `layers`, `input_shape`, `shape`, `fitness`, `generation`)  VALUES(null, ?, null, null, null, ?, ?, ?, 0, 0)';
     // $sql = 'INSERT INTO `modeldata` (`serial`, `model_name`, `model_1`, `model_2`, `date`, `layers`, `input_shape`, `shape`, `fitness`, `generation`)  VALUES(3, `fluffy_ass`, `asdf`, `asdf`, `asdf`, `1,2,3,4`, 4, `1,2,3,4`, 0, 0)';
-    $sql = "INSERT INTO `modeldata`(`serial`, `model_name`, `model_1`, `model_2`, `date`, `layers`, `input_shape`, `shape`, `fitness`, `generation`) VALUES (NULL, (?) ,'none','none', NULL, (?), (?), (?),0,0)";
+    $sql = "INSERT INTO `modeldata`(`serial`, `model_name`, `model_1`, `model_2`, `date`, `layers`, `input_shape`, `shape`, `fitness`, `generation`) VALUES (NULL, (?) ,(?), (?), NULL, (?), (?), (?),0,0)";
     $stmt = mysqli_prepare($conn, $sql);
     if (!$stmt) {
         echo "Error preparing statement: " . mysqli_error($conn) . "\n";
     } else {
-        mysqli_stmt_bind_param($stmt, "ssis", $modelName, $activations, $inputShape, $shape);
+        mysqli_stmt_bind_param($stmt, "ssssis", $modelName, $modelOneWeights, $modelTwoWeights, $activations, $inputShape, $shape);
         mysqli_stmt_execute($stmt);
         echo "model weights saved successfully \n";
 

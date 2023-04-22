@@ -34,7 +34,7 @@
         $_SESSION['track-date-created'] = 'nothing';
     }
     // $_SESSION['track-image'] = '';
-
+    
     if (!$_SESSION['model-id']) {
         $_SESSION['model-name'] = '';
         $_SESSION['model-one-weights'] = '';
@@ -45,7 +45,7 @@
         $_SESSION['model-generation'] = '';
         $_SESSION['model-save-type'] = ''; // temp / perm
     }
-    
+
     // if (!$_SESSION['name']) {
     //     $_SESSION['name'] = 'avinash';
     // }
@@ -64,7 +64,7 @@
 
     <div id="main">
 
-        <div id="layerFirst" class="layer">
+        <!-- <div id="layerFirst" class="layer">
             <div id="layerFirst_node1" class="node active_node disabled_node"></div>
             <div id="layerFirst_node2" class="node active_node disabled_node"></div>
             <div id="layerFirst_node3" class="node active_node disabled_node"></div>
@@ -77,7 +77,29 @@
             <div id="layerLast_node2" class="node active_node disabled_node"></div>
             <div id="layerLast_node3" class="node active_node disabled_node"></div>
             <div id="layerLast_node4" class="node active_node disabled_node"></div>
-        </div>
+        </div> -->
+
+        <?php
+
+        $neuron_template = '<div id="layerFirst" class="layer" style="border-color: transparent;"><div id="layerFirst_node1" class="node active_node"></div><div id="layerFirst_node2" class="node active_node"></div> <div id="layerFirst_node3" class="node active_node"></div><div id="layerFirst_node4" class="node active_node"></div><div id="layerFirst_node5" class="node active_node"></div></div>';
+
+        $shape = explode(",", $_SESSION['model-shape']);
+        $layers = explode(",", $_SESSION['model-activations']);
+
+        for ($i = 0; $i < count($layers); $i++) {
+            $neuron_template .= '<div id="layer' . ($i + 1) . '" class="layer ' . $layers[$i] . '" style="border-color: transparent;">';
+            for ($j = 0; $j < (int) $shape[$i]; $j++) {
+                $neuron_template .= '<div class="node active_node" id="layer' . ($i + 1) . '_node' . ($j + 1) . '"></div>';
+            }
+            $neuron_template .= '</div>';
+        }
+        $neuron_template .= '<div id="layerLast" class="layer" style="border-color: transparent;"><div id="layerLast_node1" class="node active_node"></div><div id="layerLast_node2" class="node active_node"></div><div id="layerLast_node3" class="node active_node"></div><div id="layerLast_node4" class="node active_node"></div></div>';
+        // echo $shape . "layers" . $layers;
+        echo $neuron_template
+
+        ?>
+
+
 
     </div>
 
@@ -103,7 +125,7 @@
                     <div class="ml-info">
                         <div class="ml-primary-info ">
                             <div id="sno0" class="ml-sno content-model-class-text hidden">Sno.</div>
-                            <div id="name0" class="ml-name content-model-class-text" >Model</div>
+                            <div id="name0" class="ml-name content-model-class-text">Model</div>
                         </div>
                         <div class="ml-secondary-info">
                             <div id="nol0" class="ml-nol  content-model-class-text">n-layers</div>
@@ -138,7 +160,7 @@
                             $inputShape = $row['input_shape'];
                             $modelShape = implode("-", explode(",", $row['shape']));
                             // $modelShape = $row['shape'];
-
+                
 
                             echo '<div id="model-list' . $id . '" class="general-content-model non-editable">
                                 <div class="ml-info">
@@ -211,7 +233,7 @@
 
                 </div>
 
-                <?php                
+                <?php
 
                 if ($_SESSION['population_size']) {
                     $population = $_SESSION['population_size'];
@@ -281,14 +303,6 @@
                     <div id="sub-9"><i class="fa fa-minus-circle" aria-hidden="true"></i></div>
                     <div id="num-9">' . $cd . '</div>
                     <div id="add-9"><i class="fa fa-plus-circle" aria-hidden="true"></i></div>
-                </div>
-            </div>
-            <div class="option" id="camera-number-setting">
-                <span class="option-name">Camera Number</span>
-                <div class="simulation-settings buttons" >
-                    <div id="sub-10"><i class="fa fa-minus-circle" aria-hidden="true"></i></div>
-                    <div id="num-10">' . $cn . '</div>
-                    <div id="add-10"><i class="fa fa-plus-circle" aria-hidden="true"></i></div>
                 </div>
             </div>
             <div class="option" id="generation-alive-time-seetting">

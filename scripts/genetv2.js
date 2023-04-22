@@ -232,12 +232,13 @@ function saveModelWeightsToServer() {
 
     const settings = {
         func : 'save-model-weights',
-        serial: $("#model-id").text().slice(-1),
+        serial: $("#model-id").text(),
         model_1: m1s,
         model_2: m2s,
         fitness: m1f,
         generation: generation,
     }
+    console.log(settings);
     // console.log($("#model-id").text().slice(-1));
     const xhr = new XMLHttpRequest();
     xhr.open('POST', '../php/main.php', true);
