@@ -281,33 +281,30 @@ function createAndUpdateRealTimeChart(divId, labelX, labelY) {
     };
   
     const options = {
-      ...chartOptions,
-      plugins: {
-        ...chartOptions.plugins,
-        title: {
-          ...chartOptions.plugins.title,
-          text: "",
+        ...chartOptions,
+        plugins: {
+          ...chartOptions.plugins,
+          title: {
+            ...chartOptions.plugins.title,
+            text: "",
+          },
         },
-      },
-      scales: {
-        xAxes: [
-          {
+        scales: {
+          xAxes: [{
             scaleLabel: {
-              display: true,
+              display: false,
               labelString: labelX,
             },
-          },
-        ],
-        yAxes: [
-          {
+          }],
+          yAxes: [{
             scaleLabel: {
-              display: true,
+              display: false,
               labelString: labelY,
             },
-          },
-        ],
-      },
-    };
+          }],
+        },
+      };
+      
   
     const chart = new Chart(ctx, {
       type: "line",
